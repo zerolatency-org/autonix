@@ -1,0 +1,17 @@
+node_modules
+.turbo
+dist
+.next
+coverage
+*.log
+.DS_Store
+
+# secrets: never commit these
+.env
+.env.*
+!.env.example
+
+# foundry
+contracts/out
+contracts/cache
+contracts/broadcast
