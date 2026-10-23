@@ -35,4 +35,4 @@ export async function signVerdict(
     primaryType: "Verdict",
     message: verdict,
   });
-}
+}

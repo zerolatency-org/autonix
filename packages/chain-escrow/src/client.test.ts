@@ -185,4 +185,4 @@ describe("EscrowClient against a real local Anvil node", () => {
       }),
     ).rejects.toThrow();
   }, 30_000);
-});
+});

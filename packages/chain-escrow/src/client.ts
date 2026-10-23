@@ -212,4 +212,4 @@ export class EscrowClient {
       args: [tokenId],
     });
   }
-}
+}

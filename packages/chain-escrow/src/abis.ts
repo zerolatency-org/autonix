@@ -146,4 +146,4 @@ export const jobEscrowAbi = [
       { name: "score", type: "uint8", indexed: false },
     ],
   },
-] as const;
+] as const;
