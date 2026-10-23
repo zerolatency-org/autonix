@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
 import { promisify } from "node:util";
-import { runChecks, type CheckResult, type Deps } from "./checks";
+import { type CheckResult, type Deps, runChecks } from "./checks";
 
 const execFileAsync = promisify(execFile);
 
@@ -13,7 +13,9 @@ function createDeps(): Deps {
           ? ["/d", "/s", "/c", "pnpm.cmd", ...args]
           : args;
       const executable =
-        process.platform === "win32" && command === "pnpm" ? process.env.ComSpec ?? "cmd.exe" : command;
+        process.platform === "win32" && command === "pnpm"
+          ? (process.env.ComSpec ?? "cmd.exe")
+          : command;
       const { stdout, stderr } = await execFileAsync(executable, commandArgs, { encoding: "utf8" });
       return `${stdout}${stderr}`;
     },
