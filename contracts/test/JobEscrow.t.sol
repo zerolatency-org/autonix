@@ -2,12 +2,17 @@
 pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {AgentIdentity} from "../src/AgentIdentity.sol";
 import {JobEscrow} from "../src/JobEscrow.sol";
 
-contract RejectsEther {
+contract RejectsEther is IERC721Receiver {
     receive() external payable {
         revert("nope");
+    }
+
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 }
 
