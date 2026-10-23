@@ -19,6 +19,22 @@ Powered by **0G Chain**, **0G Storage**, and **0G Compute**.
 
 ---
 
+## Current Project State & Implementation
+
+| Area / Component          | Package / Path                                                                                                | Status         | Key Features                                                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Identity & Access**     | [`contracts/src/AgentIdentity.sol`](file:///c:/Users/haider/Projects/autonix/contracts/src/AgentIdentity.sol) | ✅ Implemented | ERC-721 "Agentic ID", blocked plain transfers via `_update`, separate operator role with spending caps, `activeJobs` lock              |
+| **Trust & Settlement**    | [`contracts/src/JobEscrow.sol`](file:///c:/Users/haider/Projects/autonix/contracts/src/JobEscrow.sol)         | ✅ Implemented | Pre-committed `criteriaHash`, EIP-712 typed verdict settlement, pull payments via `withdraw()`, timeout refunds, provider snapshotting |
+| **Deployment Scripts**    | [`contracts/script/Deploy.s.sol`](file:///c:/Users/haider/Projects/autonix/contracts/script/Deploy.s.sol)     | ✅ Implemented | Automated deployment and cross-wiring of `AgentIdentity` and `JobEscrow`                                                               |
+| **Agent Orchestrator**    | [`packages/loop`](file:///c:/Users/haider/Projects/autonix/packages/loop)                                     | ✅ Implemented | Autonomous plan-execute-verify-adapt loop (`Orchestrator`, `Planner`, `Executor`, `Verifier`, `ToolRegistry`, replanning)              |
+| **Compute Engine**        | [`packages/compute-ollama`](file:///c:/Users/haider/Projects/autonix/packages/compute-ollama)                 | ✅ Implemented | Local LLM `ComputePort` adapter backed by Ollama (`llama3.1:8b`) with structured generation                                            |
+| **Ports & Fakes**         | [`packages/ports`](file:///c:/Users/haider/Projects/autonix/packages/ports)                                   | ✅ Implemented | Hexagonal interfaces (`StoragePort`, `ComputePort`, `ChainPort`) with zero-dependency in-memory fakes                                  |
+| **Diagnostics**           | [`tools/health`](file:///c:/Users/haider/Projects/autonix/tools/health)                                       | ✅ Implemented | Dependency diagnostics checking Node >=22, pnpm >=9, git, forge, and `.env`                                                            |
+| **Private Data & Vaults** | `packages/crypto`, `packages/zg`                                                                              | ⏳ Phase 2     | $K_u$ WebCrypto wrapping and 0G Storage adapter                                                                                        |
+| **Web Marketplace UI**    | `apps/web`                                                                                                    | ⏳ Phase 3/4   | Next.js marketplace, chat streaming, and ticket manager                                                                                |
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -43,37 +59,47 @@ flowchart LR
 ## Monorepo Layout
 
 ```
-apps/
-  web/              Next.js marketplace, chat UI, tickets, and account management
 packages/
-  ports/            Hexagonal domain interfaces (Storage, Compute, Chain) & offline fakes
-  crypto/           WebCrypto envelope encryption, key derivation, erasure proof
-  zg/               0G adapters for 0G Chain, 0G Storage, and 0G Compute
-  sdk/              Shared TypeScript types, validation schemas, and client wrappers
-services/
-  runtime/          Stateless agent execution & chat API
-  evaluator/        Automated deterministic & rubric-based work verification
-  oracle/           Transfer re-encryption & EIP-712 proof generation
-  indexer/          Event listener syncing on-chain deeds to PostgreSQL
-contracts/          Foundry Solidity contracts (AgentINFT, JobEscrow, DeedLedger, AgentSale)
+  loop/             Plan-execute-verify-adapt autonomous agent orchestrator
+  compute-ollama/   Local LLM adapter implementing ComputePort via Ollama
+  ports/            Hexagonal domain interfaces (Storage, Compute, Chain) & in-memory fakes
+contracts/
+  src/              Solidity contracts: AgentIdentity.sol, JobEscrow.sol
+  test/             Foundry tests: AgentIdentity.t.sol, JobEscrow.t.sol
+  script/           Deploy scripts: Deploy.s.sol
 tools/
   health/           Environment, toolchain, and network health checks
 docs/
-  RUNBOOK.md        Empty machine to running project setup & phase milestones
+  RUNBOOK.md        Empty machine to running project setup & command guide
   ERROR_LOG.md      Rebuild insurance & debugging log
-  0000-template.md  Architecture Decision Record (ADR) template & registry
+  0000-template.md  Architecture Decision Record (ADR) registry & template
+```
+
+---
+
+## Verification & Testing Suite
+
+All TypeScript packages are tested with Vitest and built with Turborepo:
+
+```bash
+# 1. Check environment and dependencies
+pnpm health
+
+# 2. Run all unit and orchestrator tests (65 tests across 4 packages)
+pnpm test
+
+# 3. Static type check across the monorepo
+pnpm typecheck
+
+# 4. Code quality and formatting (Biome)
+pnpm lint
+
+# 5. Run Solidity contract tests (requires Foundry)
+pnpm contracts:test
 ```
 
 ---
 
 ## Getting Started
 
-See [docs/RUNBOOK.md](file:///c:/Users/haider/Projects/autonix/docs/RUNBOOK.md) for full installation and verification instructions:
-
-```bash
-pnpm install
-cp .env.example .env
-pnpm health
-pnpm test
-pnpm contracts:test
-```
+See [docs/RUNBOOK.md](file:///c:/Users/haider/Projects/autonix/docs/RUNBOOK.md) for full setup instructions, cross-platform notes, and phase milestones.

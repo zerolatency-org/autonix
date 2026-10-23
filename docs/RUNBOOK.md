@@ -95,11 +95,24 @@ Run all verification gates before committing code:
 
 ```bash
 pnpm health               # Verifies node, pnpm, git, forge, and .env
-pnpm test                 # TypeScript tests across all workspaces (vitest)
+pnpm test                 # TypeScript tests across all workspaces (65 tests across 4 packages)
 pnpm contracts:test       # Solidity Foundry tests (forge test -vv)
 pnpm lint                 # Biome code formatting and linting
 pnpm typecheck            # TypeScript compiler check across packages
 pnpm build                # Turborepo monorepo build
+```
+
+### Running Specific Workspaces & Demonstrations
+
+```bash
+# Run agent loop tests only
+pnpm --filter @autonix/loop test
+
+# Run Ollama compute adapter tests
+pnpm --filter @autonix/compute-ollama test
+
+# Try local Ollama inference directly
+pnpm --filter @autonix/compute-ollama start
 ```
 
 ---
@@ -107,22 +120,20 @@ pnpm build                # Turborepo monorepo build
 ## 5. Monorepo Layout
 
 ```
-apps/
-  web/                   Next.js marketplace and chat UI (Tailwind CSS, Viem)
 packages/
+  loop/                  Autonomous plan-execute-verify-adapt agent orchestrator (Planner, Verifier, Executor)
+  compute-ollama/        Local LLM adapter implementing ComputePort via Ollama (llama3.1:8b)
   ports/                 Domain interfaces (StoragePort, ComputePort, ChainPort) & in-memory fakes
-  crypto/                Key derivation, WebCrypto K_u wrapping, AES-GCM envelope
-  zg/                    0G adapters (0G Chain, 0G Storage, 0G Compute)
-  sdk/                   Shared types, schemas, and API clients
-services/
-  runtime/               Agent executor, prompt assembly, and chat streaming API
-  evaluator/             Automated rubric & deterministic work verification (EIP-712 verdicts)
-  oracle/                Safe iNFT transfer re-encryption & proof signing
-  indexer/               Chain event listener caching to Postgres
-contracts/               Foundry project (AgentINFT, JobEscrow, DeedLedger, AgentSale)
+contracts/
+  src/                   Solidity contracts: AgentIdentity.sol, JobEscrow.sol
+  test/                  Foundry unit and invariant tests: AgentIdentity.t.sol, JobEscrow.t.sol
+  script/                Foundry deployment scripts: Deploy.s.sol
 tools/
   health/                Environment and dependency diagnostics
-docs/                    Runbook, error log, ADRs, master plan
+docs/
+  RUNBOOK.md             Operational runbook and setup guide
+  ERROR_LOG.md           Rebuild insurance & debugging log
+  0000-template.md       ADR template & planned registry
 ```
 
 ---
