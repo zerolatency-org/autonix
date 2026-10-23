@@ -7,12 +7,15 @@ Operational guide to set up, build, test, and run the **Autonix Network** monore
 ## 1. Install Tooling (Once)
 
 ### Node.js (>= 22)
+
 - **macOS / Linux**:
+
   ```bash
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   nvm install 22 && nvm use 22
   ```
 - **Windows (PowerShell)**:
+
   ```powershell
   # Using winget or fnm / nvm-windows
   winget install OpenJS.NodeJS.LTS
@@ -22,23 +25,28 @@ Operational guide to set up, build, test, and run the **Autonix Network** monore
   ```
 
 ### Package Manager: pnpm (>= 9)
+
 ```bash
 npm install -g pnpm@9
 ```
 
 ### Foundry (Solidity Toolchain)
+
 - **macOS / Linux**:
+
   ```bash
   curl -L https://foundry.paradigm.xyz | bash
   foundryup
   ```
 - **Windows (PowerShell)**:
+
   ```powershell
   irm https://foundry.paradigm.xyz | iex
   foundryup
   ```
 
 ### Local LLM Engine: Ollama (for Phase 0 & Phase 2 dev/fallback)
+
 Install from [ollama.com](https://ollama.com) and pull the target model:
 ```bash
 ollama run llama3.1:8b

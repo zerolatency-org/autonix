@@ -15,6 +15,7 @@ Format:
 ## Logged Entries
 
 ### 2026-10-23: forge install put libraries in the wrong folder
+
 - **Area**: `Foundry`
 - **Symptom**: `forge install` created `lib/` and `.gitmodules` at the repo root instead of `contracts/lib`.
 - **Cause**: `contracts/foundry.toml` did not exist yet, so Foundry treated the git root as the project.

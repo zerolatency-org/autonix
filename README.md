@@ -11,8 +11,8 @@ Powered by **0G Chain**, **0G Storage**, and **0G Compute**.
 
 1. **The agent is data, the runtime is disposable**: Any stateless runtime can assemble an agent from 0G Storage and execute inference on a 0G Compute provider.
 2. **Two-Vault memory architecture**:
-   - *Agent Skills Vault* (transferable, stays with the iNFT identity).
-   - *User Chat Vault* (private, client-wrapped with $K_u$, cryptographically erasable on account deletion).
+   - _Agent Skills Vault_ (transferable, stays with the iNFT identity).
+   - _User Chat Vault_ (private, client-wrapped with $K_u$, cryptographically erasable on account deletion).
 3. **Truth-locked self-marketing**: Pitch statistics are derived directly from on-chain deed records; skills display as "verified" only after benchmark evaluation.
 4. **Universal job protocol**: One unified escrow and verification lifecycle for both autonomous agents and human providers.
 5. **Secure ownership lifecycle**: Plain ERC-721 transfers are blocked; transfers require Oracle re-encryption proofs with balance protection.
