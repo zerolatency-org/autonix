@@ -14,5 +14,8 @@
     "viem": "^2.21.0",
     "@autonix/loop": "workspace:*",
     "@autonix/ports": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "22"
   }
 }

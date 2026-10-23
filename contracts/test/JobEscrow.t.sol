@@ -271,4 +271,20 @@ contract JobEscrowTest is Test {
         vm.expectRevert(JobEscrow.InvalidAmount.selector);
         escrow.createJob{value: 0}(providerTokenId, criteria, deadline);
     }
+
+    function test_ZeroAddressChecks() public {
+        vm.expectRevert(JobEscrow.ZeroAddress.selector);
+        new JobEscrow(deployer, AgentIdentity(address(0)), verifier);
+
+        vm.expectRevert(JobEscrow.ZeroAddress.selector);
+        new JobEscrow(deployer, identity, address(0));
+
+        vm.prank(deployer);
+        vm.expectRevert(JobEscrow.ZeroAddress.selector);
+        escrow.setVerifier(address(0));
+
+        vm.prank(deployer);
+        vm.expectRevert(JobEscrow.ZeroAddress.selector);
+        escrow.setFee(100, address(0));
+    }
 }

@@ -68,8 +68,8 @@ contract AgentIdentity is ERC721, Ownable {
             activeJobs: 0,
             retired: false
         });
-        _mint(to, tokenId);
         emit AgentMinted(tokenId, to, profileURI);
+        _safeMint(to, tokenId);
     }
 
     function setOperator(uint256 tokenId, address operator, uint256 capWei)

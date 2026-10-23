@@ -77,22 +77,28 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
     error NothingToWithdraw();
     error TransferFailed();
     error FeeTooHigh();
+    error ZeroAddress();
 
     constructor(address initialOwner, AgentIdentity identityContract, address initialVerifier)
         EIP712("AutonixJobEscrow", "1")
         Ownable(initialOwner)
     {
+        if (address(identityContract) == address(0) || initialVerifier == address(0)) {
+            revert ZeroAddress();
+        }
         identity = identityContract;
         verifier = initialVerifier;
     }
 
     function setVerifier(address newVerifier) external onlyOwner {
+        if (newVerifier == address(0)) revert ZeroAddress();
         verifier = newVerifier;
         emit VerifierChanged(newVerifier);
     }
 
     function setFee(uint96 newFeeBps, address newFeeRecipient) external onlyOwner {
         if (newFeeBps > 2_000) revert FeeTooHigh(); // cap at 20%, generous ceiling
+        if (newFeeBps > 0 && newFeeRecipient == address(0)) revert ZeroAddress();
         feeBps = newFeeBps;
         feeRecipient = newFeeRecipient;
         emit FeeChanged(newFeeBps, newFeeRecipient);
@@ -108,6 +114,7 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
         returns (uint256 jobId)
     {
         if (msg.value == 0) revert InvalidAmount();
+        // forge-lint: disable-next-line(block-timestamp)
         if (acceptDeadline <= block.timestamp) revert InvalidDeadline();
         if (identity.isRetired(providerTokenId)) revert AgentRetiredOrUnknown();
 
@@ -132,17 +139,20 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
     function accept(uint256 jobId) external {
         Job storage job = jobs[jobId];
         if (job.status != Status.Open) revert NotOpen();
+        // forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp > job.acceptDeadline) revert DeadlineAlreadyPassed();
 
         address currentOwner = _ownerOfAgent(job.providerTokenId);
         if (msg.sender != currentOwner) revert NotProviderOwner();
 
         job.providerOwnerAtAccept = currentOwner;
+        // casting to 'uint64' is safe because block.timestamp will not overflow uint64 for millennia
+        // forge-lint: disable-next-line(unsafe-typecast)
         job.deliverDeadline = uint64(block.timestamp) + DELIVER_WINDOW;
         job.status = Status.Accepted;
 
-        identity.setJobDelta(job.providerTokenId, true);
         emit JobAccepted(jobId, currentOwner, job.deliverDeadline);
+        identity.setJobDelta(job.providerTokenId, true);
     }
 
     function commitDelivery(uint256 jobId, bytes32 resultHash) external {
@@ -169,7 +179,6 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
         if (signer != verifier) revert BadSignature();
 
         usedNonces[nonce] = true;
-        identity.setJobDelta(job.providerTokenId, false);
 
         if (pass) {
             uint256 fee = (job.amountWei * feeBps) / 10_000;
@@ -183,6 +192,7 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
         }
 
         emit JobSettled(jobId, pass, score);
+        identity.setJobDelta(job.providerTokenId, false);
     }
 
     /// @notice Nobody accepted in time, or the provider accepted but never delivered.
@@ -191,11 +201,13 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
         Job storage job = jobs[jobId];
         if (msg.sender != job.buyer) revert NotBuyer();
 
+        bool wasAccepted = (job.status == Status.Accepted);
         if (job.status == Status.Open) {
+            // forge-lint: disable-next-line(block-timestamp)
             if (block.timestamp <= job.acceptDeadline) revert DeadlineNotPassed();
-        } else if (job.status == Status.Accepted) {
+        } else if (wasAccepted) {
+            // forge-lint: disable-next-line(block-timestamp)
             if (block.timestamp <= job.deliverDeadline) revert DeadlineNotPassed();
-            identity.setJobDelta(job.providerTokenId, false);
         } else {
             revert NotOpen();
         }
@@ -203,15 +215,19 @@ contract JobEscrow is EIP712, ReentrancyGuard, Ownable {
         balances[job.buyer] += job.amountWei;
         job.status = Status.Refunded;
         emit JobRefundedByTimeout(jobId);
+
+        if (wasAccepted) {
+            identity.setJobDelta(job.providerTokenId, false);
+        }
     }
 
     function withdraw() external nonReentrant {
         uint256 amount = balances[msg.sender];
         if (amount == 0) revert NothingToWithdraw();
         balances[msg.sender] = 0;
+        emit Withdrawn(msg.sender, amount);
         (bool ok, ) = msg.sender.call{value: amount}("");
         if (!ok) revert TransferFailed();
-        emit Withdrawn(msg.sender, amount);
     }
 
     function _ownerOfAgent(uint256 tokenId) internal view returns (address) {

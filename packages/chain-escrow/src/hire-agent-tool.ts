@@ -120,4 +120,4 @@ export function createHireAgentTool(deps: HireAgentDeps) {
       delivery,
     };
   };
-}
+}

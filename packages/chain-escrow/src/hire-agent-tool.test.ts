@@ -233,4 +233,4 @@ describe("agent hires agent, end to end against real Anvil", () => {
     expect(result.stepResults[0]?.ok).toBe(false);
     expect(result.stepResults[0]?.error).toMatch(/failed verification/);
   }, 30_000);
-});
+});
