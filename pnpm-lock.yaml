@@ -33,6 +33,12 @@ importers:
         specifier: workspace:*
         version: link:../ports
 
+  packages/loop:
+    dependencies:
+      '@autonix/ports':
+        specifier: workspace:*
+        version: link:../ports
+
   packages/ports: {}
 
   tools/health:

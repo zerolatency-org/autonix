@@ -57,7 +57,9 @@ export class OllamaCompute implements ComputePort {
     }
 
     if (!response.ok) {
-      throw new TransientError(`Ollama returned HTTP ${response.status}: ${formatError(body.error)}`);
+      throw new TransientError(
+        `Ollama returned HTTP ${response.status}: ${formatError(body.error)}`,
+      );
     }
 
     const content = body.message?.content;
