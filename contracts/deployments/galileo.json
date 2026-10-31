@@ -1,7 +1,7 @@
 {
   "chainId": 16602,
-  "agentIdentity": "",
-  "jobEscrow": "",
-  "verifier": "",
-  "deployer": ""
+  "agentIdentity": "0xA12dD35777201C70Ec4EbDDF1c388268D9E9Cf1B",
+  "jobEscrow": "0xfD7B79eb585dA95ae626181eAcf949bfB892507a",
+  "verifier": "0x72AF67C138c176A6CFc27aBbabfcEf5CdeC3c88E",
+  "deployer": "0x67D26ED9810cEfEC1230FBbd82Ea9DFc0db4cf5D"
 }
