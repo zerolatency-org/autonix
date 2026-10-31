@@ -13,7 +13,8 @@
     "lint:fix": "biome check --write .",
     "health": "pnpm --filter @autonix/health start",
     "contracts:build": "cd contracts && forge build",
-    "contracts:test": "cd contracts && forge test -vv"
+    "contracts:test": "cd contracts && forge test -vv",
+    "contracts:deploy:testnet": "cd contracts && forge script script/Deploy.s.sol --rpc-url https://evmrpc-testnet.0g.ai --broadcast --legacy"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.2",
