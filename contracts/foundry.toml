@@ -12,6 +12,8 @@ remappings = [
   "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
   "forge-std/=lib/forge-std/src/",
 ]
+# Allow deploy scripts to write the address file
+fs_permissions = [{ access = "write", path = "./deployments" }]
 
 [fuzz]
 runs = 256
